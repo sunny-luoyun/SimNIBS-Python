@@ -11,7 +11,7 @@ def cut(path, list):
         print(output)
         process.close()
 
-        process = os.popen(f'charm {path}/work/preprocess/{i}/{i} {path}/pre/{i}/{i}T1.nii.gz --forceqform')
+        process = os.popen(f'charm {i} {path}/pre/{i}/{i}T1.nii.gz --forceqform')
         output = process.read()
         print(output)
         process.close()

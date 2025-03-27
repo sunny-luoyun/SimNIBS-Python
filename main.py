@@ -1,5 +1,6 @@
 import json, os
 from charm import cut
+from opt_TI import opt
 
 def load_specific_parameters(file_path, *keys):
     try:
@@ -47,6 +48,9 @@ def get_input_path():
 def cut_brainarea(input_path, subjects):
     cut(input_path, subjects)
 
+def TI(input_path, subjects):
+    opt(input_path, subjects)
+
 
 def help():
     print('---------------------使用说明------------------------------')
@@ -88,7 +92,7 @@ def main():
             if choice == "1":
                 cut_brainarea(input_path, subjects)
             elif choice == "2":
-                pass
+                TI(input_path, subjects)
             elif choice == "3":
                 help()
         else:
