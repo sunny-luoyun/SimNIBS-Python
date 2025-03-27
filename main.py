@@ -57,17 +57,9 @@ def help():
     │
     ├── Sub001
     │   ├── Sub001T1.nii.gz (结构像文件)
-    │   ├── Sub001dwi.json (弥散像信息文件)
-    │   ├── Sub001dwi.bvec (弥散像信息文件)
-    │   ├── Sub001dwi.bval (弥散像信息文件)
-    │   ├── Sub001dwi.nii.gz (弥散像文件)
     │
     ├── Sub002
     │   ├── Sub002T1.nii.gz
-    │   ├── Sub002dwi.json
-    │   ├── Sub002dwi.bvec
-    │   ├── Sub002dwi.bval
-    │   ├── Sub002dwi.nii.gz
     │
     ├── ...
     │
@@ -96,7 +88,7 @@ def main():
             if choice == "1":
                 cut_brainarea(input_path, subjects)
             elif choice == "2":
-                option_fiber(input_path, subjects)
+                pass
             elif choice == "3":
                 help()
         else:
