@@ -69,10 +69,6 @@ def help():
     │
     └── Sub0xx
         ├── Sub0xxT1.nii.gz
-        ├── Sub0xxdwi.json
-        ├── Sub0xxdwi.bvec
-        ├── Sub0xxdwi.bval
-        ├── Sub0xxdwi.nii.gz
     注意每个文件及其名字的大小写！！！！！！！！！！
     """
     print(tree)
