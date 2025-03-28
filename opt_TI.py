@@ -27,17 +27,17 @@ def opt(path, list):
 
         ''' Set up goal function '''
         opt.goal = "focality"
-        opt.threshold = [int(mix), int(max)]
+        opt.threshold = [float(mix), float(max)]
         opt.e_postproc = "max_TI"
         ''' Define first electrode pair '''
         electrode_layout = opt.add_electrode_layout("ElectrodeArrayPair")
-        electrode_layout.radius = [int(rele)]
-        electrode_layout.current = [int(A), -int(A)]
+        electrode_layout.radius = [float(rele)]
+        electrode_layout.current = [float(A), -float(A)]
 
         ''' Define second electrode pair '''
         electrode_layout = opt.add_electrode_layout("ElectrodeArrayPair")
-        electrode_layout.radius = [int(rele)]
-        electrode_layout.current = [int(A), -int(A)]
+        electrode_layout.radius = [float(rele)]
+        electrode_layout.current = [float(A), -float(A)]
 
         ''' Define ROI '''
         roi = opt.add_roi()
@@ -45,7 +45,7 @@ def opt(path, list):
         roi.surface_type = "central"
         roi.roi_sphere_center_space = "subject"
         roi.roi_sphere_center = formatted_coords
-        roi.roi_sphere_radius = int(rroi)
+        roi.roi_sphere_radius = float(rroi)
         # uncomment for visual control of ROI:
         # roi.subpath = opt.subpath
         # roi.write_visualization('','roi.msh')
@@ -56,7 +56,7 @@ def opt(path, list):
         non_roi.surface_type = "central"
         non_roi.roi_sphere_center_space = "subject"
         non_roi.roi_sphere_center = formatted_coords
-        non_roi.roi_sphere_radius = int(rroi) + 5
+        non_roi.roi_sphere_radius = float(rroi) + 5
         non_roi.roi_sphere_operator = ["difference"]  # take difference between GM surface and the sphere region
         # uncomment for visual control of non-ROI:
         # non_roi.subpath = opt.subpath
