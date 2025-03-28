@@ -23,7 +23,7 @@ def opt(path, list):
         ''' Initialize structure '''
         opt = opt_struct.TesFlexOptimization()
         opt.subpath = f'{path}/pre/{i}/m2m_{i}'
-        opt.output_folder = f"{path}/pre/m2m_{i}/TI_opt"
+        opt.output_folder = f"{path}/pre/{i}/m2m_{i}/TI_opt"
 
         ''' Set up goal function '''
         opt.goal = "focality"
