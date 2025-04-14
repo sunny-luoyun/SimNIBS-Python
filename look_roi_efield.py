@@ -24,7 +24,7 @@ def main(path,rr,roii):
 
     # 放置roi小球
     gray_matter.add_element_field(roi, 'roi')
-    gray_matter.view(visible_fields='roi').show()
+    gray_matter.view(visible_fields='roi')
 
     # 得到小球内电场
     field_name = 'TImax'
