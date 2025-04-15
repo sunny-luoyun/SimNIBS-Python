@@ -1,6 +1,7 @@
-import random, os
+import random
+import os
+import pickle  # 用于保存和加载种群状态
 import single_ti
-
 # 假设的电极位置列表（10-10系统中的64个电极位置）
 electrode_positions = [
     'Fp1', 'Fp2', 'Fz', 'F3', 'F4', 'F7', 'F8', 'Cz', 'C3', 'C4', 'T7', 'T8',
@@ -20,13 +21,16 @@ def initialize_population(population_size, electrode_positions, num_electrodes):
     return list(population)
 
 # 计算适应度
-def calculate_fitness(population, log_file, path, r, roi):
+def calculate_fitness(population, log_file, path, r, roi, fitness_cache):
     fitness = []
     for idx, individual in enumerate(population):
-        e1, e2, e3, e4 = individual
-        fitness_value = single_ti.sim(e1, e2, e3, e4, path, r, roi)
-        print(fitness_value)
-        log_file.write(f"Trying combination {idx + 1}: {e1}, {e2}, {e3}, {e4} -> Field Strength: {fitness_value}\n")
+        if individual in fitness_cache:
+            fitness_value = fitness_cache[individual]
+        else:
+            e1, e2, e3, e4 = individual
+            fitness_value = single_ti.sim(e1, e2, e3, e4, path, r, roi)
+            fitness_cache[individual] = fitness_value
+        log_file.write(f"Trying combination {idx + 1}: {individual} -> Field Strength: {fitness_value}\n")
         log_file.flush()
         fitness.append(fitness_value)
     return fitness
@@ -37,7 +41,6 @@ def selection(population, fitness, elite_size):
     selection_probs = [f / total_fitness for f in fitness]
     selected_indices = random.choices(range(len(population)), weights=selection_probs, k=len(population) - elite_size)
     selected_population = [population[i] for i in selected_indices]
-    # 保留精英个体
     elite_indices = sorted(range(len(fitness)), key=lambda i: fitness[i], reverse=True)[:elite_size]
     elite_population = [population[i] for i in elite_indices]
     return selected_population + elite_population
@@ -75,20 +78,40 @@ def mutation(population, mutation_rate, electrode_positions):
             mutated_population.append(individual)
     return mutated_population
 
+# 保存种群状态
+def save_population_state(population, fitness, generation, fitness_cache, checkpoint_file):
+    with open(checkpoint_file, 'wb') as f:
+        pickle.dump((population, fitness, generation, fitness_cache), f)
+
+# 加载种群状态
+def load_population_state(checkpoint_file):
+    if os.path.exists(checkpoint_file):
+        with open(checkpoint_file, 'rb') as f:
+            population, fitness, generation, fitness_cache = pickle.load(f)
+        return population, fitness, generation, fitness_cache
+    return None, None, 0, {}
+
 # 主程序
-def genetic_algorithm(population_size, max_generations, crossover_rate, mutation_rate, fitness_threshold, elite_size, path, r, roi):
+def genetic_algorithm(population_size, max_generations, crossover_rate, mutation_rate, fitness_threshold, elite_size, path, r, roi, checkpoint_file):
     log_file_path = os.path.join(path, "results.txt")
-    with open(log_file_path, 'a') as log_file:  # 打开日志文件，追加模式
-        # 初始化种群
-        population = initialize_population(population_size, electrode_positions, 4)
+    fitness_cache = {}  # 用于缓存适应度值
+    with open(log_file_path, 'a') as log_file:
+        log_file.write("Starting genetic algorithm...\n")
+        log_file.flush()
+
+        # 尝试加载上次的种群状态
+        population, fitness, start_generation, fitness_cache = load_population_state(checkpoint_file)
+        if population is None:  # 如果没有检查点文件，则初始化种群
+            population = initialize_population(population_size, electrode_positions, 4)
+            start_generation = 0
 
         # 主循环
-        for generation in range(max_generations):
+        for generation in range(start_generation, max_generations):
             log_file.write(f"\nGeneration {generation + 1}:\n")
             log_file.flush()
-            # 计算适应度
-            fitness = calculate_fitness(population, log_file, path, r, roi)
 
+            # 计算适应度
+            fitness = calculate_fitness(population, log_file, path, r, roi, fitness_cache)
 
             # 打印当前尝试的次数和最佳组合
             best_individual = population[fitness.index(max(fitness))]
@@ -110,6 +133,9 @@ def genetic_algorithm(population_size, max_generations, crossover_rate, mutation
             # 变异
             population = mutation(offspring, mutation_rate, electrode_positions)
 
+            # 保存当前状态到检查点文件
+            save_population_state(population, fitness, generation + 1, fitness_cache, checkpoint_file)
+
         # 输出最优解
         best_individual = population[fitness.index(max(fitness))]
         log_file.write("\nFinal result:\n")
@@ -117,8 +143,8 @@ def genetic_algorithm(population_size, max_generations, crossover_rate, mutation
         log_file.write(f"Electric field strength: {max(fitness)}\n")
         log_file.flush()
 
-
 if __name__ == "__main__":
+    checkpoint_file = "/Users/langqin/Desktop/m2m_Sub001/checkpoint.pkl"  # 检查点文件路径
     genetic_algorithm(
         population_size=20,
         max_generations=200,
@@ -126,7 +152,8 @@ if __name__ == "__main__":
         mutation_rate=0.2,
         fitness_threshold=3.0,
         elite_size=5,
-        path = '',
-        r = 5,
-        roi = [0,0,0]
+        path='/Users/langqin/Desktop/m2m_Sub001',
+        r=5,
+        roi=[0, 0, 0],
+        checkpoint_file=checkpoint_file
     )
