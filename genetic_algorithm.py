@@ -84,7 +84,8 @@ def save_population_state(population, fitness, generation, fitness_cache, checkp
         pickle.dump((population, fitness, generation, fitness_cache), f)
 
 # 加载种群状态
-def load_population_state(checkpoint_file):
+def load_population_state(path):
+    checkpoint_file = os.path.join(path, "checkpoint.pkl")
     if os.path.exists(checkpoint_file):
         with open(checkpoint_file, 'rb') as f:
             population, fitness, generation, fitness_cache = pickle.load(f)
@@ -92,15 +93,16 @@ def load_population_state(checkpoint_file):
     return None, None, 0, {}
 
 # 主程序
-def genetic_algorithm(population_size, max_generations, crossover_rate, mutation_rate, fitness_threshold, elite_size, path, r, roi, checkpoint_file):
+def genetic_algorithm(population_size, max_generations, crossover_rate, mutation_rate, fitness_threshold, elite_size, path, r, roi):
     log_file_path = os.path.join(path, "results.txt")
+    checkpoint_file = os.path.join(path, "checkpoint.pkl")
     fitness_cache = {}  # 用于缓存适应度值
     with open(log_file_path, 'a') as log_file:
         log_file.write("Starting genetic algorithm...\n")
         log_file.flush()
 
         # 尝试加载上次的种群状态
-        population, fitness, start_generation, fitness_cache = load_population_state(checkpoint_file)
+        population, fitness, start_generation, fitness_cache = load_population_state(path)
         if population is None:  # 如果没有检查点文件，则初始化种群
             population = initialize_population(population_size, electrode_positions, 4)
             start_generation = 0
@@ -144,7 +146,7 @@ def genetic_algorithm(population_size, max_generations, crossover_rate, mutation
         log_file.flush()
 
 if __name__ == "__main__":
-    checkpoint_file = "/Users/langqin/Desktop/m2m_Sub001/checkpoint.pkl"  # 检查点文件路径
+    # checkpoint_file = "/Users/langqin/Desktop/m2m_Sub001/checkpoint.pkl"  # 检查点文件路径
     genetic_algorithm(
         population_size=20,
         max_generations=200,
@@ -155,5 +157,4 @@ if __name__ == "__main__":
         path='/Users/langqin/Desktop/m2m_Sub001',
         r=5,
         roi=[0, 0, 0],
-        checkpoint_file=checkpoint_file
     )
