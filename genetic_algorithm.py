@@ -45,21 +45,23 @@ def selection(population, fitness, elite_size):
     elite_population = [population[i] for i in elite_indices]
     return selected_population + elite_population
 
-# 交叉操作
-def crossover(population, crossover_rate):
-    offspring = set()
-    while len(offspring) < len(population):
-        parent1, parent2 = random.sample(population, 2)
+# 单点交叉操作
+def crossover(selected_population, crossover_rate):
+    offspring = []
+    for i in range(0, len(selected_population), 2):
         if random.random() < crossover_rate:
-            crossover_point = random.randint(1, len(parent1) - 1)
-            child1 = tuple(sorted(parent1[:crossover_point] + parent2[crossover_point:]))
-            child2 = tuple(sorted(parent2[:crossover_point] + parent1[crossover_point:]))
-            offspring.add(child1)
-            offspring.add(child2)
+            crossover_point = random.randint(1, len(selected_population[0]) - 1)
+            parent1 = list(selected_population[i])
+            parent2 = list(selected_population[i + 1])
+            child1 = parent1[:crossover_point] + parent2[crossover_point:]
+            child2 = parent2[:crossover_point] + parent1[crossover_point:]
+            offspring.append(tuple(sorted(child1)))
+            offspring.append(tuple(sorted(child2)))
         else:
-            offspring.add(parent1)
-            offspring.add(parent2)
-    return list(offspring)
+            offspring.append(selected_population[i])
+            if i + 1 < len(selected_population):
+                offspring.append(selected_population[i + 1])
+    return offspring
 
 # 变异操作
 def mutation(population, mutation_rate, electrode_positions):
@@ -148,12 +150,12 @@ def genetic_algorithm(population_size, max_generations, crossover_rate, mutation
 if __name__ == "__main__":
     # checkpoint_file = "/Users/langqin/Desktop/m2m_Sub001/checkpoint.pkl"  # 检查点文件路径
     genetic_algorithm(
-        population_size=20,
-        max_generations=200,
-        crossover_rate=0.6,
-        mutation_rate=0.2,
-        fitness_threshold=3.0,
-        elite_size=5,
+        population_size=50,  # 种群大小
+        max_generations=200,  # 最大代数
+        crossover_rate=0.8,  # 交叉率
+        mutation_rate=0.1,  # 变异率
+        fitness_threshold=3.0,  # 适应度阈值
+        elite_size=3,  # 精英保留数量
         path='/Users/langqin/Desktop/m2m_Sub001',
         r=5,
         roi=[0, 0, 0],

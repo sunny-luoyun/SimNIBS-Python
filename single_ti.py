@@ -81,3 +81,15 @@ def sim(e1,e2,e3,e4,path,r,roi):
     return look_roi_efield.main(path,r,roi)
 
 
+if __name__ == "__main__":
+    # checkpoint_file = "/Users/langqin/Desktop/m2m_Sub001/checkpoint.pkl"  # 检查点文件路径
+    sim(
+        e1='TP8',
+        e2='Fz',
+        e3='F8',
+        e4='TP7',
+        path='/Users/langqin/software/simnibs4_examples/m2m_MNI152',
+        r=10,
+        roi=[11.7, -2.4, -6.1]
+
+    )
