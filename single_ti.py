@@ -4,17 +4,27 @@ import numpy as np
 from simnibs import sim_struct, run_simnibs, mesh_io, ElementTags
 from simnibs.utils import TI_utils as TI
 import look_roi_efield
-"""
-     set up and run simulations for the two electrode pairs
-"""
-def sim(e1,e2,e3,e4,path,r,roi):
+import string
+import random
+
+def generate_random_path(base_path, length=5):
+    """生成一个随机路径名"""
+    letters = string.ascii_lowercase
+    random_string = ''.join(random.choice(letters) for _ in range(length))
+    return os.path.join(base_path, random_string)
+
+def sim(e1, e2, e3, e4, path, r, roi, idx):
     folder_name = os.path.basename(path)
     sub = folder_name[4:]
+
+    # 生成随机的输出路径
+    random_output_path = generate_random_path(path)
+    os.makedirs(random_output_path, exist_ok=True)  # 确保路径存在
 
     # specify general parameters
     S = sim_struct.SESSION()
     S.subpath = path  # m2m-folder of the subject
-    S.pathfem = os.path.join(path, "TI")  # Directory for the simulation
+    S.pathfem = random_output_path  # 使用随机生成的路径作为输出目录
 
     # specify first electrode pair
     tdcs = S.add_tdcslist()
@@ -77,19 +87,5 @@ def sim(e1,e2,e3,e4,path,r,roi):
     mesh_io.open_in_gmsh = False
 
     """read_results"""
-
-    return look_roi_efield.main(path,r,roi)
-
-
-if __name__ == "__main__":
-    # checkpoint_file = "/Users/langqin/Desktop/m2m_Sub001/checkpoint.pkl"  # 检查点文件路径
-    sim(
-        e1='TP8',
-        e2='Fz',
-        e3='F8',
-        e4='TP7',
-        path='/Users/langqin/software/simnibs4_examples/m2m_MNI152',
-        r=10,
-        roi=[11.7, -2.4, -6.1]
-
-    )
+    field_strength = look_roi_efield.main(path, r, roi, random_output_path)
+    return (idx, field_strength)  # 假设 idx 是从调用处传递的

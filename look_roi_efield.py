@@ -1,9 +1,10 @@
 import os
 import numpy as np
 import simnibs
-def main(path,rr,roii):
+import shutil
+def main(path, rr, roii, random_output_path):
     # 读取刺激结果，file放入刺激上一步骤刺激所生成的文件夹路径
-    newpath = os.path.join(path, "TI")
+    newpath = random_output_path
     mshpath = os.path.join(newpath, "TI.msh")
     head_mesh = simnibs.read_msh(
         os.path.join('file', mshpath)
@@ -33,10 +34,6 @@ def main(path,rr,roii):
     # 输出结果
     mean_magnE = np.average(field[roi], weights=elm_vols[roi])
 
-    process = os.popen(
-        f'rm -r {newpath}')
-    output = process.read()
-    print(output)
-    process.close()
+    shutil.rmtree(newpath)
 
     return mean_magnE

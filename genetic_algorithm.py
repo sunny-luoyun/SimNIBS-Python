@@ -1,7 +1,9 @@
 import random
 import os
-import pickle  # 用于保存和加载种群状态
+import pickle
+import concurrent.futures
 import single_ti
+
 # 假设的电极位置列表（10-10系统中的64个电极位置）
 electrode_positions = [
     'Fp1', 'Fp2', 'Fz', 'F3', 'F4', 'F7', 'F8', 'Cz', 'C3', 'C4', 'T7', 'T8',
@@ -20,24 +22,46 @@ def initialize_population(population_size, electrode_positions, num_electrodes):
         population.add(individual)
     return list(population)
 
-# 计算适应度
-def calculate_fitness(population, log_file, path, r, roi, fitness_cache):
-    fitness = []
-    for idx, individual in enumerate(population):
-        if individual in fitness_cache:
-            fitness_value = fitness_cache[individual]
-        else:
-            e1, e2, e3, e4 = individual
-            fitness_value = single_ti.sim(e1, e2, e3, e4, path, r, roi)
-            fitness_cache[individual] = fitness_value
-        log_file.write(f"Trying combination {idx + 1}: {individual} -> Field Strength: {fitness_value}\n")
-        log_file.flush()
-        fitness.append(fitness_value)
+# 计算适应度（多核版本）
+def calculate_fitness(population, log_file, path, r, roi, fitness_cache, max_workers=None):
+    fitness = [0] * len(population)  # 初始化适应度列表
+    with concurrent.futures.ProcessPoolExecutor(max_workers=max_workers) as executor:
+        futures = []
+        for idx, individual in enumerate(population):
+            if individual in fitness_cache:
+                fitness[idx] = fitness_cache[individual]
+                log_file.write(
+                    f"Using cached fitness for combination {idx + 1}: {individual} -> Field Strength: {fitness_cache[individual]}\n")
+                log_file.flush()
+            else:
+                # 提交任务时传递索引和电极组合
+                # 注意：确保传递的参数数量和顺序与 sim 函数定义一致
+                futures.append(executor.submit(single_ti.sim, *individual, path, r, roi, idx))
+
+        for future in concurrent.futures.as_completed(futures):
+            try:
+                result = future.result()
+                idx = result[0]  # 获取返回的索引
+                fitness_value = result[1]  # 获取返回的适应度值
+                fitness[idx] = fitness_value
+                fitness_cache[individual] = fitness_value
+                log_file.write(f"Trying combination {idx + 1}: {population[idx]} -> Field Strength: {fitness_value}\n")
+                log_file.flush()
+            except Exception as e:
+                log_file.write(f"Error occurred while calculating fitness for combination {idx + 1}: {population[idx]}\n")
+                log_file.write(f"Error: {e}\n")
+                log_file.flush()
+                fitness[idx] = 0  # 如果出错，将适应度值设为 0
     return fitness
 
 # 轮盘赌选择
-def selection(population, fitness, elite_size):
+def selection(population, fitness, elite_size, log_file):
     total_fitness = sum(fitness)
+    if total_fitness == 0:
+        log_file.write("Total fitness is zero. Returning current population.\n")
+        log_file.flush()
+        return population
+
     selection_probs = [f / total_fitness for f in fitness]
     selected_indices = random.choices(range(len(population)), weights=selection_probs, k=len(population) - elite_size)
     selected_population = [population[i] for i in selected_indices]
@@ -95,7 +119,8 @@ def load_population_state(path):
     return None, None, 0, {}
 
 # 主程序
-def genetic_algorithm(population_size, max_generations, crossover_rate, mutation_rate, fitness_threshold, elite_size, path, r, roi):
+def genetic_algorithm(population_size, max_generations, crossover_rate, mutation_rate, fitness_threshold, elite_size,
+                      path, r, roi, max_workers=None):
     log_file_path = os.path.join(path, "results.txt")
     checkpoint_file = os.path.join(path, "checkpoint.pkl")
     fitness_cache = {}  # 用于缓存适应度值
@@ -115,7 +140,7 @@ def genetic_algorithm(population_size, max_generations, crossover_rate, mutation
             log_file.flush()
 
             # 计算适应度
-            fitness = calculate_fitness(population, log_file, path, r, roi, fitness_cache)
+            fitness = calculate_fitness(population, log_file, path, r, roi, fitness_cache, max_workers)
 
             # 打印当前尝试的次数和最佳组合
             best_individual = population[fitness.index(max(fitness))]
@@ -124,12 +149,13 @@ def genetic_algorithm(population_size, max_generations, crossover_rate, mutation
 
             # 检查是否达到适应度阈值
             if max(fitness) >= fitness_threshold:
-                log_file.write(f"Reached the fitness threshold of {fitness_threshold} in {generation + 1} generations.\n")
+                log_file.write(
+                    f"Reached the fitness threshold of {fitness_threshold} in {generation + 1} generations.\n")
                 log_file.flush()
                 break
 
             # 选择
-            selected_population = selection(population, fitness, elite_size)
+            selected_population = selection(population, fitness, elite_size, log_file)
 
             # 交叉
             offspring = crossover(selected_population, crossover_rate)
@@ -148,7 +174,6 @@ def genetic_algorithm(population_size, max_generations, crossover_rate, mutation
         log_file.flush()
 
 if __name__ == "__main__":
-    # checkpoint_file = "/Users/langqin/Desktop/m2m_Sub001/checkpoint.pkl"  # 检查点文件路径
     genetic_algorithm(
         population_size=50,  # 种群大小
         max_generations=200,  # 最大代数
@@ -156,7 +181,8 @@ if __name__ == "__main__":
         mutation_rate=0.1,  # 变异率
         fitness_threshold=3.0,  # 适应度阈值
         elite_size=3,  # 精英保留数量
-        path='/Users/langqin/Desktop/m2m_Sub001',
-        r=5,
-        roi=[0, 0, 0],
+        path='',  # m2m文件路径
+        r=10, # roi半径
+        roi=[11.7, -2.4, -6.1], # roi坐标
+        max_workers=10 # 线程数
     )
