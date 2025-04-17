@@ -1,6 +1,6 @@
 import os,genetic_algorithm
 
-# 示例路径
+# 路径输入
 path = input("输入路径")
 folder_name = os.path.basename(path)
 
@@ -17,7 +17,7 @@ r = input('输入半径')
 r = float(r)
 e = input('输入电场大小')
 e = float(e)
-
+# 函数运行
 genetic_algorithm.genetic_algorithm(
         population_size=20,
         max_generations=200,

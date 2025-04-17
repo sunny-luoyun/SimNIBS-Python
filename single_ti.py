@@ -8,7 +8,7 @@ import string
 import random
 
 def generate_random_path(base_path, length=5):
-    """生成一个随机路径名"""
+    # 生成一个随机路径名
     letters = string.ascii_lowercase
     random_string = ''.join(random.choice(letters) for _ in range(length))
     return os.path.join(base_path, random_string)
@@ -21,21 +21,19 @@ def sim(e1, e2, e3, e4, path, r, roi, idx):
     random_output_path = generate_random_path(path)
     os.makedirs(random_output_path, exist_ok=True)  # 确保路径存在
 
-    # specify general parameters
     S = sim_struct.SESSION()
-    S.subpath = path  # m2m-folder of the subject
+    S.subpath = path  # m2m 文件路径
     S.pathfem = random_output_path  # 使用随机生成的路径作为输出目录
 
-    # specify first electrode pair
     tdcs = S.add_tdcslist()
-    tdcs.currents = [0.01, -0.01]  # Current flow though each channel (A)
+    tdcs.currents = [0.01, -0.01]  # 电流强度mA
 
     electrode = tdcs.add_electrode()
     electrode.channelnr = 1
     electrode.centre = e1
     electrode.shape = 'ellipse'
-    electrode.dimensions = [10, 10]  # diameter in [mm]
-    electrode.thickness = 2  # 2 mm thickness
+    electrode.dimensions = [10, 10]  # 电极半径mm
+    electrode.thickness = 2  # 电极厚度mm
 
     electrode = tdcs.add_electrode()
     electrode.channelnr = 2
@@ -53,26 +51,20 @@ def sim(e1, e2, e3, e4, path, r, roi, idx):
 
     run_simnibs(S)
 
-    """
-        generate the TI field from the simulation results
-    """
+    # 计算TI包络场强
+
     m1 = mesh_io.read_msh(os.path.join(S.pathfem, f'{sub}_TDCS_1_scalar.msh'))
     m2 = mesh_io.read_msh(os.path.join(S.pathfem, f'{sub}_TDCS_2_scalar.msh'))
 
-    # remove all tetrahedra and triangles belonging to the electrodes so that
-    # the two meshes have same number of elements
     tags_keep = np.hstack((np.arange(ElementTags.TH_START, ElementTags.SALINE_START - 1),
                            np.arange(ElementTags.TH_SURFACE_START, ElementTags.SALINE_TH_SURFACE_START - 1)))
     m1 = m1.crop_mesh(tags=tags_keep)
     m2 = m2.crop_mesh(tags=tags_keep)
 
-    # calculate the maximal amplitude of the TI envelope
     ef1 = m1.field['E']
     ef2 = m2.field['E']
     TImax = TI.get_maxTI(ef1.value, ef2.value)
 
-    # make a new mesh for visualization of the field strengths
-    # and the amplitude of the TI envelope
     mout = deepcopy(m1)
     mout.elmdata = []
     mout.add_element_field(ef1.norm(), 'magnE - pair 1')
@@ -86,6 +78,7 @@ def sim(e1, e2, e3, e4, path, r, roi, idx):
     v.write_opt(os.path.join(S.pathfem, 'TI.msh'))
     mesh_io.open_in_gmsh = False
 
-    """read_results"""
+    # 查看模拟结果
+
     field_strength = look_roi_efield.main(path, r, roi, random_output_path)
-    return (idx, field_strength)  # 假设 idx 是从调用处传递的
+    return (idx, field_strength)

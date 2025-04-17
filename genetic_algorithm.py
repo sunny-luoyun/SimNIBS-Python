@@ -4,7 +4,7 @@ import pickle
 import concurrent.futures
 import single_ti
 
-# 假设的电极位置列表（10-10系统中的64个电极位置）
+# 电极位置列表
 electrode_positions = [
     'Fp1', 'Fp2', 'Fz', 'F3', 'F4', 'F7', 'F8', 'Cz', 'C3', 'C4', 'T7', 'T8',
     'Pz', 'P3', 'P4', 'P7', 'P8', 'O1', 'O2', 'Fpz', 'AFz', 'AF3', 'AF4', 'AF7',
@@ -35,7 +35,6 @@ def calculate_fitness(population, log_file, path, r, roi, fitness_cache, max_wor
                 log_file.flush()
             else:
                 # 提交任务时传递索引和电极组合
-                # 注意：确保传递的参数数量和顺序与 sim 函数定义一致
                 futures.append(executor.submit(single_ti.sim, *individual, path, r, roi, idx))
 
         for future in concurrent.futures.as_completed(futures):

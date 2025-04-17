@@ -34,6 +34,7 @@ def main(path, rr, roii, random_output_path):
     # 输出结果
     mean_magnE = np.average(field[roi], weights=elm_vols[roi])
 
+    # 删除模拟的文件夹
     shutil.rmtree(newpath)
 
     return mean_magnE
