@@ -81,4 +81,16 @@ def sim(e1, e2, e3, e4, path, r, roi, idx):
     # 查看模拟结果
 
     field_strength = look_roi_efield.main(path, r, roi, random_output_path)
+    print(idx, field_strength)
     return (idx, field_strength)
+
+if __name__ == "__main__":
+    sim(e1='C5',
+        e2='FC6',
+        e3='FT8',
+        e4='TP7',
+        path='/Users/langqin/Desktop/m2m_Sub999',
+        r=5,
+        roi=[16.5, 8.7, -9.6],
+        idx=None
+        )
