@@ -19,12 +19,12 @@ e = input('输入电场大小')
 e = float(e)
 # 函数运行
 genetic_algorithm.genetic_algorithm(
-        population_size=20,
+        population_size=50,
         max_generations=200,
         crossover_rate=0.6,
         mutation_rate=0.2,
         fitness_threshold=e,
-        elite_size=5,
+        elite_size=3,
         path = path,
         r = r,
         roi = roi_list
