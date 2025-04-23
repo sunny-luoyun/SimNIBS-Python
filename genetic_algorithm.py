@@ -180,7 +180,7 @@ if __name__ == "__main__":
         mutation_rate=0.1,  # 变异率
         fitness_threshold=3.0,  # 适应度阈值
         elite_size=3,  # 精英保留数量
-        path='/Users/langqin/Desktop/sim_file/m2m_Sub003',  # m2m文件路径
+        path='',  # m2m文件路径
         r=10, # roi半径
         roi=[11.7, -2.4, -6.1], # roi坐标
         max_workers=50 # 线程数
