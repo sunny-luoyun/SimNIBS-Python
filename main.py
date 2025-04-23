@@ -49,33 +49,80 @@ def check_for_updates():
     except Exception as e:
         print(f"发生错误：{e}")
 
-check_for_updates()
-# 路径输入
-path = input("输入文件")
-folder_name = os.path.basename(path)
+def get_user_input():
+    while True:
+        path = input("请输入文件路径: ").strip()
+        if os.path.exists(path):
+            folder_name = os.path.basename(path)
+            if folder_name.startswith("m2m_"):
+                xxx = folder_name[4:]
+                print(f"处理的被试为: {xxx}")
+                break
+            else:
+                print("路径不符合预期格式，请输入以 'm2m_' 开头的文件夹路径。")
+        else:
+            print("路径无效，请重新输入。")
 
-if folder_name.startswith("m2m_"):
-    # 提取 "m2m_" 之后的部分
-    xxx = folder_name[4:]
-    print("处理的被试为:", xxx)
-else:
-    print("路径不符合预期格式")
-roi = input('输入ROI的个体空间坐标:')
-roi_list = [float(coord) for coord in roi.replace(',', ' ').split()]
-print('输入ROI为',roi_list)
-r = input('输入半径')
-r = float(r)
-e = input('输入电场大小')
-e = float(e)
-# 函数运行
-genetic_algorithm.genetic_algorithm(
+    while True:
+        roi = input("请输入ROI的个体空间坐标（用逗号或空格分隔）: ").strip()
+        try:
+            roi_list = [float(coord) for coord in roi.replace(',', ' ').split()]
+            if len(roi_list) == 3:  # 假设ROI坐标是三维的
+                print(f"输入的ROI坐标为: {roi_list}")
+                break
+            else:
+                print("ROI坐标必须包含3个数值，请重新输入。")
+        except ValueError:
+            print("输入格式错误，请输入数字，用逗号或空格分隔。")
+
+    while True:
+        try:
+            r = float(input("请输入半径: ").strip())
+            if r > 0:
+                break
+            else:
+                print("半径必须为正数，请重新输入。")
+        except ValueError:
+            print("输入格式错误，请输入一个数字。")
+
+    while True:
+        try:
+            e = float(input("请输入电场大小: ").strip())
+            if e > 0:
+                break
+            else:
+                print("电场大小必须为正数，请重新输入。")
+        except ValueError:
+            print("输入格式错误，请输入一个数字。")
+
+    return path, roi_list, r, e
+
+def run_genetic_algorithm(path, roi_list, r, e):
+    print("\n正在运行遗传算法，参数如下：")
+    print(f"路径: {path}")
+    print(f"ROI坐标: {roi_list}")
+    print(f"半径: {r}")
+    print(f"电场大小: {e}")
+    print("遗传算法正在运行，请稍候...")
+
+    genetic_algorithm.genetic_algorithm(
         population_size=50,
         max_generations=200,
         crossover_rate=0.6,
         mutation_rate=0.2,
         fitness_threshold=e,
         elite_size=3,
-        path = path,
-        r = r,
-        roi = roi_list
+        path=path,
+        r=r,
+        roi=roi_list
     )
+
+    print("遗传算法运行完成！")
+
+def main():
+    check_for_updates()
+    path, roi_list, r, e = get_user_input()
+    run_genetic_algorithm(path, roi_list, r, e)
+
+if __name__ == "__main__":
+    main()
