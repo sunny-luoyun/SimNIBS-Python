@@ -1,5 +1,6 @@
 import os,genetic_algorithm
 import subprocess
+import leadfield
 def check_for_updates():
     print("正在检查更新...")
     try:
@@ -121,8 +122,15 @@ def run_genetic_algorithm(path, roi_list, r, e):
 
 def main():
     check_for_updates()
-    path, roi_list, r, e = get_user_input()
-    run_genetic_algorithm(path, roi_list, r, e)
+    while True:
+        choice = input('输入1进行索引建立，输入2进行电场模拟')
+        if choice == '1':
+            leadfield.leadfieldbuild()
+            break
+        elif choice == '2':
+            path, roi_list, r, e = get_user_input()
+            run_genetic_algorithm(path, roi_list, r, e)
+            break
 
 if __name__ == "__main__":
     main()
