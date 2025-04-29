@@ -30,7 +30,7 @@ def get_electrode_indices(electrode_names, target_electrodes):
     return indices
 
 
-def calculate_interference_field(leadfield_data, indices, current=0.005):
+def calculate_interference_field(leadfield_data, indices, current=0.01):
     """
     计算两个电极对产生的包络调制电场
     :param leadfield_data: 电场数据
