@@ -1,5 +1,5 @@
 import os.path
-
+import time
 from simnibs import sim_struct, run_simnibs
 def leadfieldbuild():
     while True:
@@ -11,7 +11,7 @@ def leadfieldbuild():
         elif choice == '0':
             continue
     output = os.path.join(subpath,'leadfield')
-
+    st = time.time()
     tdcs_lf = sim_struct.TDCSLEADFIELD()
     # subject folder
     tdcs_lf.subpath = subpath
@@ -23,4 +23,10 @@ def leadfieldbuild():
     # memory (~12 GB)
     run_simnibs(tdcs_lf)
     print('索引建立结束')
+    et = time.time()
+    elapsed_time = et - st
+    hours = int(elapsed_time // 3600)
+    minutes = int((elapsed_time % 3600) // 60)
+    seconds = int(elapsed_time % 60)
+    print(f"处理结束，共花费时间：{hours}小时{minutes}分{seconds}秒")
 
