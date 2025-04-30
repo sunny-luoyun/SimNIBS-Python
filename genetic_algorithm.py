@@ -3,6 +3,7 @@ import os
 import pickle
 import concurrent.futures
 import TI
+import single_ti
 
 # 电极位置列表
 electrode_positions = [
@@ -35,7 +36,7 @@ def calculate_fitness(population, log_file, path, r, roi, fitness_cache, max_wor
                 log_file.flush()
             else:
                 # 提交任务时传递索引和电极组合
-                futures.append(executor.submit(TI.calculate_electric_field, *individual, path, r, roi, idx))
+                futures.append(executor.submit(single_ti.sim, *individual, path, r, roi, idx))
 
         for future in concurrent.futures.as_completed(futures):
             try:
@@ -180,8 +181,8 @@ if __name__ == "__main__":
         mutation_rate=0.1,  # 变异率
         fitness_threshold=3.0,  # 适应度阈值
         elite_size=3,  # 精英保留数量
-        path='/Users/langqin/Desktop/m2m_Sub001',  # m2m文件路径
+        path='/Users/langqin/Desktop/m2m_Sub012',  # m2m文件路径
         r=10, # roi半径
-        roi=[11.7, -2.4, -6.1], # roi坐标
-        max_workers=50 # 线程数
+        roi=[13.8, 1.3, 11.9], # roi坐标
+        max_workers=10 # 线程数
     )

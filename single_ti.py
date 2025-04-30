@@ -85,12 +85,12 @@ def sim(e1, e2, e3, e4, path, r, roi, idx):
     return (idx, field_strength)
 
 if __name__ == "__main__":
-    sim(e1='C5',
-        e2='FC6',
-        e3='FT8',
-        e4='TP7',
-        path='/Users/langqin/Desktop/m2m_Sub999',
-        r=5,
-        roi=[16.5, 8.7, -9.6],
+    sim(e1='CP1',
+        e2='F2',
+        e3='F6',
+        e4='PO7',
+        path='/Users/langqin/Desktop/m2m_Sub012',
+        r=10,
+        roi=[13.8, 1.3, 11.9],
         idx=None
         )

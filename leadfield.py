@@ -17,8 +17,11 @@ def leadfieldbuild():
     tdcs_lf.subpath = subpath
     # output directory
     tdcs_lf.pathfem = output
+    tdcs_lf.interpolation = None
+    tdcs_lf.interpolation_tissue = [1,2,3,5,6,7,8,9,10]
+    tdcs_lf.tissues = [1,2,3,5,6,7,8,9,10]
     # Uncoment to use the pardiso solver
-    tdcs_lf.solver_options = 'pardiso'
+    # tdcs_lf.solver_options = 'pardiso'
     # This solver is faster than the default. However, it requires much more
     # memory (~12 GB)
     run_simnibs(tdcs_lf)

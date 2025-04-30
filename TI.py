@@ -1,6 +1,7 @@
 import h5py
 import numpy as np
 import os
+import time
 
 
 def load_leadfield_data(hdf5_file):
@@ -38,10 +39,10 @@ def calculate_interference_field(leadfield_data, indices, current=0.01):
     :param current: 输入电流大小（单位：A），默认为 1A
     """
     # 获取两组电极的电场数据
-    field1 = leadfield_data[indices[0], :, :] * current
-    field2 = leadfield_data[indices[1], :, :] * current
-    field3 = leadfield_data[indices[2], :, :] * current
-    field4 = leadfield_data[indices[3], :, :] * current
+    field1 = leadfield_data[indices[0], :, :] * current  # 正极
+    field2 = -leadfield_data[indices[1], :, :] * current  # 负极
+    field3 = leadfield_data[indices[2], :, :] * current  # 正极
+    field4 = -leadfield_data[indices[3], :, :] * current  # 负极
 
     # 计算每组电极的电场叠加
     combined_field1 = field1 + field2
@@ -123,9 +124,16 @@ def calculate_electric_field(e1, e2, e3, e4, path, r, roi, idx):
 
 # 示例调用
 if __name__ == "__main__":
-    e1, e2, e3, e4 = 'Fz', 'F8', 'TP7', 'TP8'
-    path = '/Users/langqin/Desktop/m2m_Sub001'
+    e1, e2, e3, e4 = 'F4', 'F6', 'F8', 'Fz'
+    path = '/Users/langqin/Desktop/m2m_Sub012'
     r = 10.0
-    roi = [28.0, 4.0, -4.0]
+    roi = [13.8, 1.3, 11.9]
     idx = None
+    st = time.time()
     calculate_electric_field(e1, e2, e3, e4, path, r, roi, idx)
+    et = time.time()
+    elapsed_time = et - st
+    hours = int(elapsed_time // 3600)
+    minutes = int((elapsed_time % 3600) // 60)
+    seconds = int(elapsed_time % 60)
+    print(f"处理结束，共花费时间：{hours}小时{minutes}分{seconds}秒")
