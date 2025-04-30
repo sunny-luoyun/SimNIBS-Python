@@ -184,5 +184,5 @@ if __name__ == "__main__":
         path='/Users/langqin/Desktop/m2m_Sub012',  # m2m文件路径
         r=10, # roi半径
         roi=[13.8, 1.3, 11.9], # roi坐标
-        max_workers=10 # 线程数
+        max_workers=50 # 线程数
     )
