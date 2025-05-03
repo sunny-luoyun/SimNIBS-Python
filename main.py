@@ -2,6 +2,7 @@ import os,genetic_algorithm
 import subprocess
 import leadfield
 import opt
+import single_ti
 def check_for_updates():
     print("正在检查更新...")
     try:
@@ -99,6 +100,55 @@ def get_user_input():
 
     return path, roi_list, r, e
 
+def get_roi_field():
+    while True:
+        path = input("请输入文件路径: ").strip()
+        if os.path.exists(path):
+            folder_name = os.path.basename(path)
+            if folder_name.startswith("m2m_"):
+                xxx = folder_name[4:]
+                print(f"处理的被试为: {xxx}")
+                break
+            else:
+                print("路径不符合预期格式，请输入以 'm2m_' 开头的文件夹路径。")
+        else:
+            print("路径无效，请重新输入。")
+
+    while True:
+        roi = input("请输入ROI的个体空间坐标（用逗号或空格分隔）: ").strip()
+        try:
+            roi_list = [float(coord) for coord in roi.replace(',', ' ').split()]
+            if len(roi_list) == 3:  # 假设ROI坐标是三维的
+                print(f"输入的ROI坐标为: {roi_list}")
+                break
+            else:
+                print("ROI坐标必须包含3个数值，请重新输入。")
+        except ValueError:
+            print("输入格式错误，请输入数字，用逗号或空格分隔。")
+
+    while True:
+        try:
+            r = float(input("请输入半径: ").strip())
+            if r > 0:
+                break
+            else:
+                print("半径必须为正数，请重新输入。")
+        except ValueError:
+            print("输入格式错误，请输入一个数字。")
+
+    while True:
+        try:
+            e1 = input('请输入通道1，第1个电极位置(10-10EEG):')
+            e2 = input('请输入通道1，第2个电极位置(10-10EEG):')
+            e3 = input('请输入通道2，第1个电极位置(10-10EEG):')
+            e4 = input('请输入通道2，第2个电极位置(10-10EEG):')
+            break
+        except:
+            pass
+
+    return e1,e2,e3,e4,path,r,roi_list
+
+
 def run_genetic_algorithm(path, roi_list, r, e):
     print("\n正在运行遗传算法，参数如下：")
     print(f"路径: {path}")
@@ -124,7 +174,7 @@ def run_genetic_algorithm(path, roi_list, r, e):
 def main():
     check_for_updates()
     while True:
-        choice = input('输入1进行索引建立\n输入2进行电场模拟\n输入3进行TI逆向')
+        choice = input('输入1进行索引建立\n输入2进行电场模拟\n输入3进行TI逆向\n输入4进行电场查看')
         if choice == '1':
             leadfield.leadfieldbuild()
             break
@@ -136,6 +186,12 @@ def main():
             path, roi_list, r, e = get_user_input()
             opt.opt(path,roi_list,r,e)
             break
+        elif choice == '4':
+            e1,e2,e3,e4,path,r,roi = get_roi_field()
+            (idx, e) = single_ti.sim(e1,e2,e3,e4,path,r,roi,idx=None)
+            print(f'roi处平均电场为 {e} V/m')
+            break
+
 
 if __name__ == "__main__":
     main()
