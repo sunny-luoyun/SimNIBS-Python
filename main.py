@@ -3,6 +3,7 @@ import subprocess
 import leadfield
 import opt
 import single_ti
+import pair_algorithm
 def check_for_updates():
     print("正在检查更新...")
     try:
@@ -174,7 +175,7 @@ def run_genetic_algorithm(path, roi_list, r, e):
 def main():
     check_for_updates()
     while True:
-        choice = input('输入1进行索引建立\n输入2进行电场模拟\n输入3进行TI逆向\n输入4进行电场查看')
+        choice = input('输入1进行索引建立\n输入2TI逆向(全电极位)\n输入3TI逆向(坐标位)\n输入4进行roi处电场查看\n输入5TI逆向(对称电极位)')
         if choice == '1':
             leadfield.leadfieldbuild()
             break
@@ -190,6 +191,11 @@ def main():
             e1,e2,e3,e4,path,r,roi = get_roi_field()
             (idx, e) = single_ti.sim(e1,e2,e3,e4,path,r,roi,idx=None)
             print(f'roi处平均电场为 {e} V/m')
+            break
+        elif choice == '5':
+            path, roi_list, r, e = get_user_input()
+            num_pairs = 2
+            pair_algorithm.exhaustive_search(num_pairs,path,r, roi_list, max_workers=50)
             break
 
 
