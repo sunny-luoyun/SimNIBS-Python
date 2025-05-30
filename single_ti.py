@@ -28,6 +28,13 @@ def sim(e1, e2, e3, e4, path, r, roi, idx):
     tdcs = S.add_tdcslist()
     tdcs.currents = [0.01, -0.01]  # 电流强度mA
 
+    # 设置各向异性类型为 'vn'
+    tdcs.anisotropy_type = 'vn'  # 使用体积归一化的各向异性导电性
+
+    # 设置各向异性参数
+    tdcs.aniso_maxratio = 10  # 最大各向异性比率
+    tdcs.aniso_maxcond = 2  # 最大导电性值
+
     electrode = tdcs.add_electrode()
     electrode.channelnr = 1
     electrode.centre = e1
