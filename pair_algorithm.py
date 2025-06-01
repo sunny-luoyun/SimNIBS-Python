@@ -81,7 +81,7 @@ def exhaustive_search(num_pairs, path, r, roi, max_workers=50):
 if __name__ == "__main__":
     exhaustive_search(
         num_pairs=2,  # 每个组合中对称电极对的数量
-        path='/Users/langqin/Desktop/m2m_Sub001',  # m2m文件路径
+        path='/Users/langqin/data/m2m_Sub001',  # m2m文件路径
         r=10,  # roi半径
         roi=[13.8, 1.3, 11.9],  # roi坐标
         max_workers=5  # 线程数

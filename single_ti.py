@@ -60,8 +60,8 @@ def sim(e1, e2, e3, e4, path, r, roi, idx):
 
     # 计算TI包络场强
 
-    m1 = mesh_io.read_msh(os.path.join(S.pathfem, f'{sub}_TDCS_1_scalar.msh'))
-    m2 = mesh_io.read_msh(os.path.join(S.pathfem, f'{sub}_TDCS_2_scalar.msh'))
+    m1 = mesh_io.read_msh(os.path.join(S.pathfem, f'{sub}_TDCS_1_vn.msh'))
+    m2 = mesh_io.read_msh(os.path.join(S.pathfem, f'{sub}_TDCS_2_vn.msh'))
 
     tags_keep = np.hstack((np.arange(ElementTags.TH_START, ElementTags.SALINE_START - 1),
                            np.arange(ElementTags.TH_SURFACE_START, ElementTags.SALINE_TH_SURFACE_START - 1)))
@@ -88,7 +88,7 @@ def sim(e1, e2, e3, e4, path, r, roi, idx):
     # 查看模拟结果
 
     field_strength = look_roi_efield.main(path, r, roi, random_output_path)
-    # print(idx, field_strength)
+    print(idx, field_strength)
     return (idx, field_strength)
 
 if __name__ == "__main__":
@@ -96,7 +96,7 @@ if __name__ == "__main__":
         e2='F2',
         e3='F6',
         e4='PO7',
-        path='/Users/langqin/Desktop/m2m_Sub014',
+        path='/Users/langqin/data/m2m_Sub001',
         r=10,
         roi=[13.8, 1.3, 11.9],
         idx=None
