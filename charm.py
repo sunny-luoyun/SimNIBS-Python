@@ -48,8 +48,8 @@ def charm():
     print(path)
     cmd = f'charm {sub} {path} --forcerun'
     subprocess.run(cmd, shell=True, check=True)
-    # 获取当前程序的绝对路径
-    current_dir = os.path.dirname(os.path.abspath(__file__))
+    # 获取当前终端的工作目录
+    current_dir = os.getcwd()
 
     # 构造m2m文件夹的绝对路径
     m2m_folder = os.path.join(current_dir, f'm2m_{sub}')
