@@ -175,7 +175,7 @@ def run_genetic_algorithm(path, roi_list, r, e):
 def main():
     check_for_updates()
     while True:
-        choice = input('输入1进行索引建立\n输入2TI逆向(全电极位)\n输入3TI逆向(坐标位)\n输入4进行roi处电场查看\n输入5TI逆向(对称电极位)')
+        choice = input('输入1进行索引建立\n输入2TI逆向(得到EEG10-10的结果)\n输入3TI逆向(得到坐标点结果)\n输入4进行roi处电场查看\n输入5TI逆向(对称电极位模拟)')
         if choice == '1':
             leadfield.leadfieldbuild()
             break
