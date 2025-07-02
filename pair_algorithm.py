@@ -21,7 +21,7 @@ def get_all_combinations(symmetric_pairs, num_pairs):
     return [tuple(sorted([electrode for pair in combo for electrode in pair])) for combo in all_combinations]
 
 # 计算适应度（多核版本）
-def calculate_fitness(all_combinations, log_file, path, r, roi, fitness_cache, max_workers=None):
+def calculate_fitness(all_combinations, log_file, path, r, roi, fitness_cache, ma, max_workers=None):
     fitness = [0] * len(all_combinations)  # 初始化适应度列表
     with concurrent.futures.ProcessPoolExecutor(max_workers=max_workers) as executor:
         futures = []
@@ -33,7 +33,7 @@ def calculate_fitness(all_combinations, log_file, path, r, roi, fitness_cache, m
                 log_file.flush()
             else:
                 # 提交任务时传递索引和电极组合
-                futures.append(executor.submit(single_ti.sim, *individual, path, r, roi, idx))
+                futures.append(executor.submit(single_ti.sim, *individual, path, r, roi, ma, idx))
 
         for future in concurrent.futures.as_completed(futures):
             try:
@@ -52,7 +52,7 @@ def calculate_fitness(all_combinations, log_file, path, r, roi, fitness_cache, m
     return fitness
 
 # 主程序
-def exhaustive_search(num_pairs, path, r, roi, max_workers=50):
+def exhaustive_search(num_pairs, path, r, roi, ma, max_workers=50):
     log_file_path = os.path.join(path, "pair_results.txt")
     fitness_cache = {}  # 用于缓存适应度值
 
@@ -66,7 +66,7 @@ def exhaustive_search(num_pairs, path, r, roi, max_workers=50):
         log_file.flush()
 
         # 计算适应度
-        fitness = calculate_fitness(all_combinations, log_file, path, r, roi, fitness_cache, max_workers)
+        fitness = calculate_fitness(all_combinations, log_file, path, r, roi, fitness_cache, ma, max_workers)
 
         # 输出最优解
         best_index = fitness.index(max(fitness))
@@ -84,5 +84,6 @@ if __name__ == "__main__":
         path='/Users/langqin/data/m2m_Sub001',  # m2m文件路径
         r=10,  # roi半径
         roi=[13.8, 1.3, 11.9],  # roi坐标
+        ma = 0.01,
         max_workers=5  # 线程数
     )

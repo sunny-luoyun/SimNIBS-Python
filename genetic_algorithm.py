@@ -24,7 +24,7 @@ def initialize_population(population_size, electrode_positions, num_electrodes):
     return list(population)
 
 # 计算适应度（多核版本）
-def calculate_fitness(population, log_file, path, r, roi, fitness_cache, max_workers=None):
+def calculate_fitness(population, log_file, path, r, roi, fitness_cache, ma, max_workers=None):
     fitness = [0] * len(population)  # 初始化适应度列表
     with concurrent.futures.ProcessPoolExecutor(max_workers=max_workers) as executor:
         futures = []
@@ -36,7 +36,7 @@ def calculate_fitness(population, log_file, path, r, roi, fitness_cache, max_wor
                 log_file.flush()
             else:
                 # 提交任务时传递索引和电极组合
-                futures.append(executor.submit(single_ti.sim, *individual, path, r, roi, idx))
+                futures.append(executor.submit(single_ti.sim, *individual, path, r, roi, ma, idx))
 
         for future in concurrent.futures.as_completed(futures):
             try:
@@ -120,7 +120,7 @@ def load_population_state(path):
 
 # 主程序
 def genetic_algorithm(population_size, max_generations, crossover_rate, mutation_rate, fitness_threshold, elite_size,
-                      path, r, roi, max_workers=None):
+                      path, r, roi, ma, max_workers=None):
     log_file_path = os.path.join(path, "results.txt")
     checkpoint_file = os.path.join(path, "checkpoint.pkl")
     fitness_cache = {}  # 用于缓存适应度值
@@ -140,7 +140,7 @@ def genetic_algorithm(population_size, max_generations, crossover_rate, mutation
             log_file.flush()
 
             # 计算适应度
-            fitness = calculate_fitness(population, log_file, path, r, roi, fitness_cache, max_workers)
+            fitness = calculate_fitness(population, log_file, path, r, roi, fitness_cache, ma, max_workers)
 
             # 打印当前尝试的次数和最佳组合
             best_individual = population[fitness.index(max(fitness))]
@@ -184,5 +184,6 @@ if __name__ == "__main__":
         path='/Users/langqin/Desktop/m2m_Sub012',  # m2m文件路径
         r=10, # roi半径
         roi=[13.8, 1.3, 11.9], # roi坐标
-        max_workers=50 # 线程数
+        ma = 0.01,
+        max_workers=50# 线程数
     )

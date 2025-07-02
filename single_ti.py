@@ -13,7 +13,7 @@ def generate_random_path(base_path, length=5):
     random_string = ''.join(random.choice(letters) for _ in range(length))
     return os.path.join(base_path, random_string)
 
-def sim(e1, e2, e3, e4, path, r, roi, idx):
+def sim(e1, e2, e3, e4, path, r, roi, ma, idx):
     folder_name = os.path.basename(path)
     sub = folder_name[4:]
 
@@ -26,7 +26,7 @@ def sim(e1, e2, e3, e4, path, r, roi, idx):
     S.pathfem = random_output_path  # 使用随机生成的路径作为输出目录
 
     tdcs = S.add_tdcslist()
-    tdcs.currents = [0.01, -0.01]  # 电流强度mA
+    tdcs.currents = [ma, -ma]  # 电流强度mA
 
     # 设置各向异性类型为 'vn'
     tdcs.anisotropy_type = 'vn'  # 使用体积归一化的各向异性导电性
@@ -99,5 +99,6 @@ if __name__ == "__main__":
         path='/Users/langqin/data/m2m_Sub001',
         r=10,
         roi=[13.8, 1.3, 11.9],
+        ma = 0.01,
         idx=None
         )

@@ -8,7 +8,7 @@ import os.path
 
 from simnibs import opt_struct
 import time
-def opt(path,roi_list,r,e):
+def opt(path,roi_list,r,e, ma):
     st = time.time()
     ''' Initialize structure '''
     opt = opt_struct.TesFlexOptimization()
@@ -27,12 +27,12 @@ def opt(path,roi_list,r,e):
     ''' Define first electrode pair '''
     electrode_layout = opt.add_electrode_layout("ElectrodeArrayPair")   # Pair of TES electrode arrays (here: 1 electrode per array)
     electrode_layout.radius = [10]                                      # radii of electrodes
-    electrode_layout.current = [0.01, -0.01]                          # electrode currents
+    electrode_layout.current = [ma, -ma]                          # electrode currents
 
     ''' Define second electrode pair '''
     electrode_layout = opt.add_electrode_layout("ElectrodeArrayPair")
     electrode_layout.radius = [10]
-    electrode_layout.current = [0.01, -0.01]
+    electrode_layout.current = [ma, -ma]
 
     ''' Define ROI '''
     roi = opt.add_roi()
