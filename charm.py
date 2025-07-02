@@ -32,7 +32,7 @@ def convert_dicom_to_nifti(input_path, output_path,sub):
             raise RuntimeError(f"执行dcm2niix命令时出错：{e}")
 
         # 获取输出文件路径
-        output_file = os.path.join(output_path, os.path.basename(input_path) + "T1.nii.gz")
+        output_file = os.path.join(output_path, f"{sub}T1.nii.gz")
         if not os.path.exists(output_file):
             raise FileNotFoundError(f"转换后的NIfTI文件 {output_file} 未找到。")
 
