@@ -29,11 +29,11 @@ def sim(e1, e2, e3, e4, path, r, roi, ma, idx):
     tdcs.currents = [ma, -ma]  # 电流强度mA
 
     # 设置各向异性类型为 'vn'
-    tdcs.anisotropy_type = 'vn'  # 使用体积归一化的各向异性导电性
+    # tdcs.anisotropy_type = 'vn'  # 使用体积归一化的各向异性导电性
 
     # 设置各向异性参数
-    tdcs.aniso_maxratio = 10  # 最大各向异性比率
-    tdcs.aniso_maxcond = 2  # 最大导电性值
+    # tdcs.aniso_maxratio = 10  # 最大各向异性比率
+    # tdcs.aniso_maxcond = 2  # 最大导电性值
 
     electrode = tdcs.add_electrode()
     electrode.channelnr = 1
@@ -60,8 +60,8 @@ def sim(e1, e2, e3, e4, path, r, roi, ma, idx):
 
     # 计算TI包络场强
 
-    m1 = mesh_io.read_msh(os.path.join(S.pathfem, f'{sub}_TDCS_1_vn.msh'))
-    m2 = mesh_io.read_msh(os.path.join(S.pathfem, f'{sub}_TDCS_2_vn.msh'))
+    m1 = mesh_io.read_msh(os.path.join(S.pathfem, f'{sub}_TDCS_1_scalar.msh'))
+    m2 = mesh_io.read_msh(os.path.join(S.pathfem, f'{sub}_TDCS_2_scalar.msh'))
 
     tags_keep = np.hstack((np.arange(ElementTags.TH_START, ElementTags.SALINE_START - 1),
                            np.arange(ElementTags.TH_SURFACE_START, ElementTags.SALINE_TH_SURFACE_START - 1)))
