@@ -118,7 +118,7 @@ def process_input(e):
     # 去除多余的空格
     e = e.strip()
     # 如果是10-10EEG脑电图的点位，直接返回
-    if e.isalpha() or (e.replace('z', '').isalpha() and e[-1].lower() == 'z'):
+    if e.isalnum() and not e.isdigit() and not e.isalpha():
         return e
     # 如果是坐标
     else:
