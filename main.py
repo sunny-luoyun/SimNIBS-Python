@@ -210,7 +210,8 @@ def run_genetic_algorithm(path, roi_list, r, e, ma):
         elite_size=3,
         path=path,
         r=r,
-        roi=roi_list
+        roi=roi_list,
+        ma = ma
     )
 
     print("遗传算法运行完成！")
