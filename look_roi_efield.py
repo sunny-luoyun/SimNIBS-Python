@@ -14,7 +14,7 @@ def main(path, rr, roii, random_output_path):
     gray_matter = head_mesh.crop_mesh(simnibs.ElementTags.GM)
 
     # 设定要观察的ROI位置
-    ernie_coords = simnibs.mni2subject_coords(roii, path)
+    ernie_coords = roii
     # 以roi为中心半径10mm的小球
     r = rr
 
