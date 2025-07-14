@@ -1,10 +1,12 @@
 import os,genetic_algorithm,charm
+import time
 
 from bs4.dammit import chardet_module
 
 import opt
 import single_ti
 import pair_algorithm
+import makeTISfile
 '''
 def check_for_updates():
     print("正在检查更新...")
@@ -197,9 +199,10 @@ def run_genetic_algorithm(path, roi_list, r, e, ma):
     print(f"路径: {path}")
     print(f"ROI坐标: {roi_list}")
     print(f"半径: {r}")
-    print(f"电场大小: {e}")
+    print(f"预估电场大小: {e}")
     print(f'电流大小{ma}')
     print("遗传算法正在运行，请稍候...")
+    time.sleep(10)
 
     genetic_algorithm.genetic_algorithm(
         population_size=50,
@@ -219,7 +222,7 @@ def run_genetic_algorithm(path, roi_list, r, e, ma):
 def main():
     # check_for_updates()
     while True:
-        choice = input('输入1进行T1像建模\n输入2TI逆向(得到EEG10-10的结果)\n输入3TI逆向(得到坐标点结果)\n输入4进行roi处电场查看\n输入5TI正向(对称电极位模拟)\n输入6查看各选项功能及用法\n输入0退出程序')
+        choice = input('输入1进行T1像建模\n输入2TI逆向(得到EEG10-10的结果)\n输入3TI逆向(得到坐标点结果)\n输入4进行roi处电场查看\n输入5TI正向(对称电极位模拟)\n输入6进行一次TI模拟并生成模拟文件\n输入7查看各选项功能及用法\n输入0退出程序')
         if choice == '1':
             charm.charm()
             break
@@ -234,7 +237,10 @@ def main():
         elif choice == '4':
             e1,e2,e3,e4,path,r,roi,ma = get_roi_field()
             (idx, e) = single_ti.sim(e1,e2,e3,e4,path,r,roi,ma,idx=None)
-            print(f'roi处平均电场为 {e} V/m')
+            print(f'CH1:{e1}-{e2}'
+                  f'CH2:{e3}-{e4}'
+                  f'电流大小为:{ma}A'
+                  f'{roi}处半径{r}mm的小球内平均电场为{e}V/m')
             break
         elif choice == '5':
             path, roi_list, r, e, ma = get_user_input()
@@ -242,6 +248,11 @@ def main():
             pair_algorithm.exhaustive_search(num_pairs,path,r, roi_list, ma, max_workers=50)
             break
         elif choice == '6':
+            e1, e2, e3, e4, path, r, roi, ma = get_roi_field()
+            makeTISfile.sim(e1, e2, e3, e4, path, r, roi, ma, idx=None)
+
+            break
+        elif choice == '7':
             print('\n'
                   '本软件是调用SimNIBS进行TI刺激的仿真模拟。仿真模拟一共分为建模和模拟两个步骤\n\n'
                   '选项1：即为结构像的建模，需要输入原始结构像的NIFTI格式的文件（.nii）或包含DICOM格式（.dcm）的文件夹路径，以及输出路径，和被试编号(如:Subxxx)。\n'
@@ -260,7 +271,8 @@ def main():
                   ''
                   '选项5：TI正向，该方法与选项2的方法相同，即通过正向模拟来获得最佳的电极点位放置方法，但该方法每对电极对都是左右脑对称放置\n'
                   '      这种对称放置的方法能大大减少正向模拟的尝试次数，故可以不用算法优化便能完成所有可能的放置情况模拟\n'
-                  '      最终模拟的结果在pair_results.txt中可进行查看\n')
+                  '      最终模拟的结果在pair_results.txt中可进行查看\n'
+                  '选项6：生成单次模拟的文件。')
             input('回车返回')
 
         elif choice == '0':
