@@ -237,9 +237,9 @@ def main():
         elif choice == '4':
             e1,e2,e3,e4,path,r,roi,ma = get_roi_field()
             (idx, e) = single_ti.sim(e1,e2,e3,e4,path,r,roi,ma,idx=None)
-            print(f'CH1:{e1}-{e2}'
-                  f'CH2:{e3}-{e4}'
-                  f'电流大小为:{ma}A'
+            print(f'CH1:{e1}-{e2}\n'
+                  f'CH2:{e3}-{e4}\n'
+                  f'电流大小为:{ma}A\n'
                   f'{roi}处半径{r}mm的小球内平均电场为{e}V/m')
             break
         elif choice == '5':
