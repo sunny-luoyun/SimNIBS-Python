@@ -1,5 +1,6 @@
 import os,genetic_algorithm,charm
 import time
+import re
 
 from bs4.dammit import chardet_module
 
@@ -117,10 +118,11 @@ def get_user_input():
     return path, roi_list, r, e, ma
 
 def process_input(e):
+    pattern = re.compile(r'^[A-Z][A-Z]?\d?\d?z?$', re.IGNORECASE)
     # 去除多余的空格
     e = e.strip()
     # 如果是10-10EEG脑电图的点位，直接返回
-    if e.isalnum() and not e.isdigit() and not e.isalpha():
+    if pattern.fullmatch(e):
         return e
     # 如果是坐标
     else:
